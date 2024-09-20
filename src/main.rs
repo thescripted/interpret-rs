@@ -1,3 +1,14 @@
+//! interpret is an interpreter for the Lox programming language.
+
+#![deny(
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_variables,
+    unstable_features,
+    unused_import_braces,
+    missing_docs
+)]
+
 use clap::Parser;
 use std::io::{self, Write};
 
