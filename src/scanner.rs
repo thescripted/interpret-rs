@@ -36,6 +36,7 @@ impl Scanner {
                 '>' => self.parse_greater(),
                 '<' => self.parse_less(),
                 '/' => self.parse_slash(),
+                '"' => self.parse_string(),
                 ' ' | '\r' | '\t' => self.advance(), // ignore whitespace
                 '\n' => {
                     self.advance();
@@ -114,6 +115,34 @@ impl Scanner {
         self.advance();
     }
 
+    fn parse_string(&mut self) {
+        let start = self.cursor + 1;
+        self.advance();
+        while self.current() != '"' && !self.finished() {
+            if self.current() == '\n' {
+                self.line += 1;
+            }
+
+            self.advance();
+        }
+
+        if self.finished() {
+            eprintln!("error at line {}: unterminated string", self.line);
+            return;
+        }
+
+        let end = self.cursor;
+        let value = self.source[start..end].iter().collect::<String>();
+
+        self.add_token_with_literal(
+            TokenType::String,
+            &value.clone(), // TODO(ben): is this necessary?
+            Some(LiteralValue::String(value)),
+        );
+
+        self.advance();
+    }
+
     fn parse_number(&mut self) {
         let start = self.cursor;
         while self.current().is_digit(10) {
@@ -145,9 +174,10 @@ impl Scanner {
         let end = self.cursor;
 
         let text = self.source[start..end].iter().collect::<String>();
-        let ttype = get_keyword_token_type(&text);
-        self.add_token(ttype, &text);
+        let (ttype, value) = get_keyword_token(&text);
+        self.add_token_with_literal(ttype, &text, value);
     }
+
     fn add_token(&mut self, ttype: TokenType, lexeme: &str) {
         self.tokens.push(Token {
             ttype,
@@ -195,24 +225,25 @@ impl Scanner {
     }
 }
 
-fn get_keyword_token_type(text: &str) -> TokenType {
+#[cfg_attr(any(), rustfmt::skip)]
+fn get_keyword_token(text: &str) -> (TokenType, Option<LiteralValue>) {
     match text {
-        "and" => TokenType::And,
-        "class" => TokenType::Class,
-        "else" => TokenType::Else,
-        "false" => TokenType::False,
-        "for" => TokenType::For,
-        "fun" => TokenType::Fun,
-        "if" => TokenType::If,
-        "nil" => TokenType::Nil,
-        "or" => TokenType::Or,
-        "print" => TokenType::Print,
-        "return" => TokenType::Return,
-        "super" => TokenType::Super,
-        "this" => TokenType::This,
-        "true" => TokenType::True,
-        "var" => TokenType::Var,
-        "while" => TokenType::While,
-        _ => TokenType::Identifier,
+        "and"    => (TokenType::And,    None),
+        "class"  => (TokenType::Class,  None),
+        "else"   => (TokenType::Else,   None),
+        "false"  => (TokenType::False,  Some(LiteralValue::Boolean(false))),
+        "for"    => (TokenType::For,    None),
+        "fun"    => (TokenType::Fun,    None),
+        "if"     => (TokenType::If,     None),
+        "nil"    => (TokenType::Nil,    Some(LiteralValue::Nil)),
+        "or"     => (TokenType::Or,     None),
+        "print"  => (TokenType::Print,  None),
+        "return" => (TokenType::Return, None),
+        "super"  => (TokenType::Super,  None),
+        "this"   => (TokenType::This,   None),
+        "true"   => (TokenType::True,   Some(LiteralValue::Boolean(true))),
+        "var"    => (TokenType::Var,    None),
+        "while"  => (TokenType::While,  None),
+        _        => (TokenType::Identifier, None),
     }
 }
