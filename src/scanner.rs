@@ -247,3 +247,94 @@ fn get_keyword_token(text: &str) -> (TokenType, Option<LiteralValue>) {
         _        => (TokenType::Identifier, None),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_scanner() {
+        let source = r#"
+            // This is a comment
+            var x = 3.14;
+            var y = "Hello, world!";
+            if (x <= 3.14) {
+                print y;
+            } else {
+                print "x is greater than pi";
+            }
+        "#;
+
+        let mut scanner = Scanner::new(source.to_string());
+        let tokens = scanner.scan_tokens();
+        let expected = vec![
+            (TokenType::Var, "var", None, 2),
+            (TokenType::Identifier, "x", None, 2),
+            (TokenType::Equal, "=", None, 2),
+            (
+                TokenType::Number,
+                "3.14",
+                Some(LiteralValue::Number(3.14)),
+                2,
+            ),
+            (TokenType::Semicolon, ";", None, 2),
+            (TokenType::Var, "var", None, 3),
+            (TokenType::Identifier, "y", None, 3),
+            (TokenType::Equal, "=", None, 3),
+            (
+                TokenType::String,
+                "Hello, world!",
+                Some(LiteralValue::String("Hello, world!".to_string())),
+                3,
+            ),
+            (TokenType::Semicolon, ";", None, 3),
+            (TokenType::If, "if", None, 4),
+            (TokenType::LeftParen, "(", None, 4),
+            (TokenType::Identifier, "x", None, 4),
+            (TokenType::LessEqual, "<=", None, 4),
+            (
+                TokenType::Number,
+                "3.14",
+                Some(LiteralValue::Number(3.14)),
+                4,
+            ),
+            (TokenType::RightParen, ")", None, 4),
+            (TokenType::LeftBrace, "{", None, 4),
+            (TokenType::Print, "print", None, 5),
+            (TokenType::Identifier, "y", None, 5),
+            (TokenType::Semicolon, ";", None, 5),
+            (TokenType::RightBrace, "}", None, 6),
+            (TokenType::Else, "else", None, 6),
+            (TokenType::LeftBrace, "{", None, 6),
+            (TokenType::Print, "print", None, 7),
+            (
+                TokenType::String,
+                "x is greater than pi",
+                Some(LiteralValue::String("x is greater than pi".to_string())),
+                7,
+            ),
+            (TokenType::Semicolon, ";", None, 7),
+            (TokenType::RightBrace, "}", None, 8),
+            (TokenType::EOF, "", None, 9),
+        ];
+
+        let expected = expected
+            .into_iter()
+            .map(|(ttype, lexeme, literal, line)| Token {
+                ttype,
+                lexeme: lexeme.to_string(),
+                literal,
+                line,
+            })
+            .collect::<Vec<Token>>();
+
+        assert_eq!(tokens.len(), expected.len());
+
+        for (i, t) in tokens.iter().enumerate() {
+            assert_eq!(t.ttype, expected[i].ttype);
+            assert_eq!(t.lexeme, expected[i].lexeme);
+            assert_eq!(t.line, expected[i].line);
+            // TODO(ben): check literals
+        }
+    }
+}
