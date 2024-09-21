@@ -49,7 +49,6 @@ fn main() -> io::Result<()> {
             }
 
             run(input);
-            println!("{}", input);
         }
     }
 
@@ -60,9 +59,11 @@ fn run(input: &str) {
     let mut scanner = Scanner::new(input.to_string());
     let tokens = scanner.scan_tokens();
     let mut p = parser::Parser::new(tokens.clone());
-    let ast = p.parse();
 
-    println!("{:?}", ast);
+    let ast = p.parse();
+    let prettier = expr::Prettify::new(ast);
+
+    prettier.pretty_print();
 }
 
 #[cfg(test)]

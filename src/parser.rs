@@ -101,9 +101,9 @@ impl Parser {
     fn parse_unary(&mut self) -> Expr {
         match self.current().ttype {
             TokenType::Minus | TokenType::Bang => {
+                let operator = self.current().clone();
                 self.advance();
 
-                let operator = self.current().clone();
                 Expr::Unary {
                     op: operator,
                     right: Box::new(self.parse_unary()),
@@ -135,7 +135,7 @@ impl Parser {
                 }
             }
 
-            _ => todo!(),
+            _ => todo!("not ready"),
         }
     }
 

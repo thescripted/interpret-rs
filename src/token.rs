@@ -14,6 +14,17 @@ pub enum LiteralValue {
     Nil,
 }
 
+impl std::fmt::Display for LiteralValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LiteralValue::Number(n) => write!(f, "{}", n),
+            LiteralValue::String(s) => write!(f, "\"{}\"", s),
+            LiteralValue::Boolean(b) => write!(f, "{}", b),
+            LiteralValue::Nil => write!(f, "nil"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
     // Single-character tokens
