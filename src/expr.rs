@@ -52,7 +52,7 @@ impl Prettify {
 
 impl Callback<String> for &Prettify {
     fn eval_binary(self, left: &Expr, op: &Token, right: &Expr) -> String {
-        format!("({} {} {})", left.eval(self), op.lexeme, right.eval(self))
+        format!("({} {} {})", op.lexeme, left.eval(self), right.eval(self))
     }
     fn eval_unary(self, op: &Token, right: &Expr) -> String {
         format!("({} {})", op.lexeme, right.eval(self))
@@ -64,6 +64,6 @@ impl Callback<String> for &Prettify {
         }
     }
     fn eval_grouped(self, expr: &Expr) -> String {
-        format!("({})", expr.eval(self))
+        format!("(group {})", expr.eval(self))
     }
 }

@@ -129,6 +129,7 @@ impl Parser {
             TokenType::LeftParen => {
                 self.advance();
                 let expr = self.parse_expression();
+                self.advance(); // consume right paren
 
                 Expr::Grouped {
                     expr: Box::new(expr),
