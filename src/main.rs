@@ -12,6 +12,7 @@
 use clap::Parser;
 use std::io::{self, Write};
 
+mod expr;
 mod parser;
 mod scanner;
 mod token;

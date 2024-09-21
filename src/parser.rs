@@ -1,29 +1,7 @@
-use crate::token::{Token, TokenType};
-
-mod expression {
-    use crate::token::{LiteralValue, Token};
-
-    #[derive(Debug)]
-    pub enum Expr {
-        Binary {
-            left: Box<Expr>,
-            op: Token,
-            right: Box<Expr>,
-        },
-        Unary {
-            op: Token,
-            right: Box<Expr>,
-        },
-        Grouped {
-            expr: Box<Expr>,
-        },
-        Literal {
-            value: Option<LiteralValue>,
-        },
-    }
-}
-
-use expression::Expr;
+use crate::{
+    expr::Expr,
+    token::{Token, TokenType},
+};
 
 pub struct Parser {
     tokens: Vec<Token>,
