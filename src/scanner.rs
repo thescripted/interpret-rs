@@ -174,7 +174,7 @@ impl Scanner {
         let end = self.cursor;
 
         let text = self.source[start..end].iter().collect::<String>();
-        let (ttype, value) = get_keyword_token(&text);
+        let (ttype, value) = get_keyword_token_type(&text);
         self.add_token_with_literal(ttype, &text, value);
     }
 
@@ -201,7 +201,7 @@ impl Scanner {
         });
     }
 
-    fn current(&mut self) -> char {
+    fn current(&self) -> char {
         if self.finished() {
             return '\0';
         }
@@ -212,7 +212,7 @@ impl Scanner {
         self.cursor += 1;
     }
 
-    fn peek(&mut self) -> char {
+    fn peek(&self) -> char {
         if self.finished() || self.cursor + 1 >= self.source.len() {
             return '\0';
         }
@@ -220,13 +220,13 @@ impl Scanner {
         self.source[self.cursor + 1]
     }
 
-    fn finished(&mut self) -> bool {
+    fn finished(&self) -> bool {
         self.cursor >= self.source.len()
     }
 }
 
 #[cfg_attr(any(), rustfmt::skip)]
-fn get_keyword_token(text: &str) -> (TokenType, Option<LiteralValue>) {
+fn get_keyword_token_type(text: &str) -> (TokenType, Option<LiteralValue>) {
     match text {
         "and"    => (TokenType::And,    None),
         "class"  => (TokenType::Class,  None),

@@ -2,7 +2,7 @@
 pub struct Token {
     pub ttype: TokenType,
     pub lexeme: String,
-    pub literal: Option<LiteralValue>, // TODO(ben): understand this.
+    pub literal: Option<LiteralValue>,
     pub line: usize,
 }
 

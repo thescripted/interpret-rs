@@ -12,8 +12,10 @@
 use clap::Parser;
 use std::io::{self, Write};
 
+mod parser;
 mod scanner;
 mod token;
+
 use scanner::Scanner;
 
 #[derive(Parser, Debug)]
@@ -53,17 +55,13 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-/// Runs the scanner on the provided input and prints all tokens.
-///
-/// TODO(ben): This function currently only scans and prints tokens.
-/// It does not perform any further processing or interpretation of the input.
 fn run(input: &str) {
     let mut scanner = Scanner::new(input.to_string());
     let tokens = scanner.scan_tokens();
+    let mut p = parser::Parser::new(tokens.clone());
+    let ast = p.parse();
 
-    for token in tokens {
-        println!("{:?}", token);
-    }
+    println!("{:?}", ast);
 }
 
 #[cfg(test)]
