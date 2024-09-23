@@ -61,9 +61,8 @@ fn run(input: &str) {
     let mut p = parser::Parser::new(tokens.clone());
 
     let ast = p.parse();
-    let prettier = expr::Prettify::new(ast);
-
-    prettier.pretty_print();
+    let evaluator = expr::Evaluation::new(ast);
+    evaluator.interpret();
 }
 
 #[cfg(test)]
